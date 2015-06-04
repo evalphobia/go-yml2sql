@@ -35,7 +35,7 @@ func main(
 
     stmt := yml2sql.CreateStatementByFile(path)
 
-    // execute insert
+    // execute insert `banks` table
     _, err := db.Exec(stmt)
 
     if err != nil {

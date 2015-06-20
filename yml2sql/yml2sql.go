@@ -16,8 +16,9 @@ const (
 )
 
 var (
-	pluralFlag = false
-	namingType = NamingTypeDir
+	pluralFlag   = false
+	nullableFlag = false
+	namingType   = NamingTypeDir
 )
 
 // CreateStatementByFile returns SQL INSERT statement
@@ -39,6 +40,15 @@ func SetPlural(b bool) {
 
 func isPlural() bool {
 	return pluralFlag
+}
+
+// SetNullable set nullable flag
+func SetNullable(b bool) {
+	nullableFlag = b
+}
+
+func isNullable() bool {
+	return nullableFlag
 }
 
 // SetNamingTypeDir set naming type to dir or file
@@ -110,10 +120,27 @@ func encodeValues(keys []string, m []map[string]interface{}) string {
 	for _, row := range m {
 		var v []string
 		for _, key := range keys {
-			v = append(v, "'"+fmt.Sprint(row[key])+"'")
+			v = append(v, toString(row[key]))
 		}
 		result = append(result,
 			fmt.Sprintf("(%s)", strings.Join(v, ", ")))
 	}
 	return strings.Join(result, ", ")
+}
+
+func toString(value interface{}) string {
+	switch t := value.(type) {
+	case string:
+		return "'" + t + "'"
+	case int:
+		return fmt.Sprint(t)
+	case nil:
+		if isNullable() {
+			return "NULL"
+		} else {
+			return "''"
+		}
+	default:
+		return fmt.Sprint(t)
+	}
 }

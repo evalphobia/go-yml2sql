@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"bitbucket.org/pkg/inflect"
@@ -104,6 +105,7 @@ func getKeys(m map[string]interface{}) []string {
 	for key := range m {
 		keys = append(keys, fmt.Sprint(key))
 	}
+	sort.Strings(keys)
 	return keys
 }
 
@@ -131,6 +133,9 @@ func encodeValues(keys []string, m []map[string]interface{}) string {
 func toString(value interface{}) string {
 	switch t := value.(type) {
 	case string:
+		if isNullString(t) {
+			return "NULL"
+		}
 		return "'" + t + "'"
 	case int:
 		return fmt.Sprint(t)
@@ -143,4 +148,17 @@ func toString(value interface{}) string {
 	default:
 		return fmt.Sprint(t)
 	}
+}
+
+func isNullString(v string) bool {
+	str := strings.ToLower(v)
+	switch {
+	case str == "null":
+		return true
+	case str == "nil":
+		return true
+	case str == "" && isNullable():
+		return true
+	}
+	return false
 }

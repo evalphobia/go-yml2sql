@@ -28,7 +28,7 @@ func CreateStatementByFile(file string) string {
 	m := createMapData(file)
 	schema, values := schemaStrings(m)
 
-	return fmt.Sprintf("INSERT INTO `%s`(%s) VALUES%s; \n",
+	return fmt.Sprintf("INSERT INTO\n  `%s`(%s)\nVALUES\n  %s; \n",
 		tableName,
 		schema,
 		values)
@@ -125,9 +125,9 @@ func encodeValues(keys []string, m []map[string]interface{}) string {
 			v = append(v, toString(row[key]))
 		}
 		result = append(result,
-			fmt.Sprintf("(%s)", strings.Join(v, ", ")))
+			fmt.Sprintf("(%s)", strings.Join(v, ",")))
 	}
-	return strings.Join(result, ", ")
+	return strings.Join(result, ",\n  ")
 }
 
 func toString(value interface{}) string {

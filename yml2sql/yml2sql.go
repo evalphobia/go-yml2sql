@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"bitbucket.org/pkg/inflect"
+	"github.com/jinzhu/inflection"
 	"gopkg.in/yaml.v2"
 )
 
@@ -88,7 +88,7 @@ func getTableName(path string) string {
 	}
 	// add 's' when plural flag is set
 	if isPlural() {
-		return inflect.Pluralize(name)
+		return inflection.Plural(name)
 	}
 	return name
 }
